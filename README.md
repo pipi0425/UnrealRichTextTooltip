@@ -17,13 +17,13 @@ In `FRichInlineTooltip::CreateDecoratorWidget` check if valid then put a UUserWi
 - Place the two files into your source and compile. You may need to add `"Slate"` and `"SlateCore"` to your build.cs's `PublicDependencyModuleNames` (maybe also UMG? I added UMG for another functionality in my project so I don't know if it is needed.)
 - In UE, create BP with parent `URichTextBlockTooltipDecorator`.
 - Set the text style variable of BP_RichTextBlockTooltipDecorator (otherwise you may see purple blocks)
-- Override `CreateTooltipWidget`. Notice that directly creating widgets here may cause errors (world context issue). My solution is: cast the player controller to my player controller, then, in my player controller create a function that inputs the id string and outputs a UUserWidget. Alternatively, you can also create blueprint interface and implement that interface in your player controller to avoid casting.
+- Override `CreateTooltipWidget`. Notice that directly creating widgets here may cause errors (world context issue). My solution is: cast the player controller to my player controller, then, in my player controller create a function that inputs the id string and outputs a UUserWidget. Alternatively, you can also create blueprint interface and implement that interface in your player controller to avoid casting. (Or use BlueprintFunctionLibrary, or WorldSubsystem, anyway, player controller is given, it should work as long as you input an id str and output a userwidget)
 - Add your BP_RichTextBlockTooltipDecorator to your richtextblocks' decorator classes.
 - In richtextblocks, write `<tooltip id="xxx">yyy</>` to use.
 
 ## Other info
-- tested in UE 5.4.4-35576357, works both in editor and shipping build.
-- known issue: the tooltip has a background, either remove your background in your widget blueprint, or edit the CreateDecoratorWidget function to remove the tooltip's background (have not tested yet)
+- tested in UE 5.4.4-35576357 (confirm still working in UE 5.7.0.47537391), works both in editor and shipping build.
+- ~~known issue: the tooltip has a background, either remove your background in your widget blueprint, or edit the CreateDecoratorWidget function to remove the tooltip's background (have not tested yet)~~ fixed by setting BorderImage nullptr.
 - if anyone wants to use this repo as a starting point to create more decorators, you may also want to take a look at UE's built-in image decorator's implementation:
   - Engine/Source/Runtime/UMG/Public/Components/RichTextBlockImageDecorator.h
   - Engine/Source/Runtime/UMG/Private/Components/RichTextBlockDecorator.cpp
@@ -45,13 +45,13 @@ In `FRichInlineTooltip::CreateDecoratorWidget` check if valid then put a UUserWi
 - .h和.cpp文件放入源码，编译。需要在build.cs里的依赖模块里添加Slate和SlateCore（我自己的项目之前就添加了UMG因此不知道需不需要，如果没加UMG编译不出来就加上咯）
 - 回到UE Editor里以`URichTextBlockTooltipDecorator`为父类创建蓝图。
 - 蓝图中设置textstyle，不改的话默认font好像没字体，会出现紫块。
-- 蓝图中override `CreateTooltipWidget`。注意直接在此`CreateWidget`以及执行其他的一些需要world context的东西会出错（这也就是为什么我在此放了一个playercontroller）。我的解决方案是把playercontroller转成自己的playercontroller然后去那边写CreateWidget和其他逻辑。（你也可以做Blueprint Interface蓝图接口然后你的playercontroller去实现接口）
+- 蓝图中override `CreateTooltipWidget`。注意直接在此`CreateWidget`以及执行其他的一些需要world context的东西会出错（这也就是为什么我在此放了一个playercontroller）。我的解决方案是把playercontroller转成自己的playercontroller然后去那边写CreateWidget和其他逻辑。（你也可以做Blueprint Interface蓝图接口然后你的playercontroller去实现接口）（总之已经给出了playercontroller，用BFL或者world subsystem什么的都行，只要是根据id string返回userwidget就好）
 - 把这个tooltip decorator的蓝图加到你richtextblock的decorator classes里去。
 - 在richtextblock里写`<tooltip id="阿巴阿巴">阿巴阿巴阿巴</>`来使用。
 
 ## 补充信息
-- 我在UE 5.4.4-35576357里测的，editor和打包出来都可用。
-- 已知问题：这个tooltip会自带一个背景，要么把你蓝图里的widget背景删掉，要么去改CreateDecoratorWidget函数，我懒得改了。
+- 我在UE 5.4.4-35576357里测的（截至UE 5.7.0.47537391仍然可用），editor和打包出来都可用。
+- ~~已知问题：这个tooltip会自带一个背景，要么把你蓝图里的widget背景删掉，要么去改CreateDecoratorWidget函数，我懒得改了。~~ 已修复，给BorderImage设置一个nullptr解决的，可按需更改。
 - 如果你要以此为基础写其他的decorator，可以看看UE内置的image decorator的实现，位置在：
   - Engine/Source/Runtime/UMG/Public/Components/RichTextBlockImageDecorator.h
   - Engine/Source/Runtime/UMG/Private/Components/RichTextBlockDecorator.cpp
