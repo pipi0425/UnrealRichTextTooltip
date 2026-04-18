@@ -30,7 +30,10 @@ protected:
 		{
 			if (UUserWidget* TooltipWidget = Decorator->CreateTooltipWidget(Owner->GetWorld()->GetFirstPlayerController(), InRunInfo.MetaData[TEXT("id")]))
 			{
-				widget->SetToolTip(SNew(SToolTip).Content()[TooltipWidget->TakeWidget()]);
+				widget->SetToolTip(SNew(SToolTip)
+					.BorderImage(nullptr)
+					.Content()[TooltipWidget->TakeWidget()]
+				);
 			}
 		}
 
